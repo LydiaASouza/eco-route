@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulador de Mobilidade</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+
+<body>
+
+<header>
+  <h1>⚡ Simulador de Mobilidade</h1>
+  <p>Compare tempo, custo e emissão de CO₂</p>
+</header>
+
+<section class="input-area">
+  <label>Distância: <span id="kmValue">10</span> km</label>
+  <input type="range" min="1" max="50" value="10" id="distancia">
+  <button onclick="simular()">Simular →</button>
+</section>
+
+<section id="resultados"></section>
+
+<section class="graficos">
+  <div class="grafico-card">
+    <h3>⏱ Tempo de Deslocamento</h3>
+    <canvas id="graficoTempo"></canvas>
+  </div>
+
+  <div class="grafico-card">
+    <h3>💰 Custo Estimado</h3>
+    <canvas id="graficoCusto"></canvas>
+  </div>
+
+  <div class="grafico-card">
+    <h3>🌱 Emissão de CO₂</h3>
+    <canvas id="graficoCO2"></canvas>
+  </div>
+</section>
+
+</section> <!-- fecha os gráficos -->
+
+<section class="rota-input">
+  <input type="text" id="origemInput" placeholder="Digite a origem">
+  <input type="text" id="destinoInput" placeholder="Digite o destino">
+  <button onclick="buscarRota()">Buscar rota</button>
+</section>
+
+<section class="mapa">
+  <h3>🗺 Visualização do trajeto</h3>
+  <div id="map" style="height: 400px;"></div>
+</section>
+
+<footer>
+  Simulador de Mobilidade Urbana — Dados estimados para trajetos urbanos
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+}
+
+header {
+  text-align: center;
+  padding: 40px;
+  background: #fff;
+}
+
+h1 {
+  font-size: 32px;
+}
+
+.input-area {
+  background: #fff;
+  margin: 20px auto;
+  padding: 30px;
+  width: 60%;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+input[type=range] {
+  width: 80%;
+  margin: 20px 0;
+}
+
+button {
+  background: #1e9e6a;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background: #157a52;
+}
+
+#resultados {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.card.destaque {
+  border: 2px solid #1e9e6a;
+}
+
+.info {
+  margin: 8px 0;
+}
+
+/* GRÁFICOS */
+
+.graficos {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.grafico-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #555;
+}
