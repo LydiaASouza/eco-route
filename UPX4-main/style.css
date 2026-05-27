@@ -529,3 +529,35 @@ body {
   align-items: center;
   gap: 4px;
 }
+
+/* ===================================== */
+/* ALERTA DE CLIMA */
+/* ===================================== */
+.weather-alert {
+  background: #fff0f0;
+  border: 1px solid #ffcccc;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #d93838;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.weather-alert.hidden {
+  display: none;
+}
+
+.weather-alert i {
+  font-size: 24px;
+}
+
+.weather-alert.good-weather {
+  background: #f4fbf6;
+  border: 1px solid #a3d9b1;
+  color: #2e7d32;
+}

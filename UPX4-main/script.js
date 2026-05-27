@@ -1,7 +1,6 @@
 // =====================================
 // ABAS
 // =====================================
-
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabContents = document.querySelectorAll(".tab-content");
 
@@ -15,7 +14,6 @@ tabButtons.forEach(btn => {
     const tabId = btn.dataset.tab;
     document.getElementById(tabId).classList.add("active");
 
-    // Corrige tamanho do mapa ao mudar de aba
     if(tabId === "mapa"){
       setTimeout(() => {
         map.invalidateSize();
@@ -27,7 +25,6 @@ tabButtons.forEach(btn => {
 // =====================================
 // MAPA
 // =====================================
-
 const map = L.map("map").setView([-23.55052, -46.633308], 8);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -37,9 +34,27 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 let routingControl = null;
 
 // =====================================
+// CLIMA (OPEN-METEO)
+// =====================================
+async function buscarClima(lat, lon) {
+  try {
+    const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+    const data = await response.json();
+    const weatherCode = data.current_weather.weathercode;
+    
+    // O NOSSO ESPIÃO:
+    console.log(`🌧️ Auditoria de Clima: O código recebido para essa coordenada foi ${weatherCode}`);
+
+    return weatherCode >= 51; 
+  } catch (error) {
+    console.error("Erro ao buscar clima:", error);
+    return false; 
+  }
+}
+
+// =====================================
 // BUSCAR ROTA
 // =====================================
-
 async function buscarRota(){
   const origem = document.getElementById("origemInput").value;
   const destino = document.getElementById("destinoInput").value;
@@ -50,73 +65,90 @@ async function buscarRota(){
   }
 
   try {
-    // GEOCODIFICAÇÃO
     const origemGeo = await buscarCoordenadas(origem);
     const destinoGeo = await buscarCoordenadas(destino);
 
-    // LIMPA ROTA ANTERIOR
     if(routingControl){
       map.removeControl(routingControl);
     }
-
-    // NOVA ROTA
+    
     routingControl = L.Routing.control({
       waypoints: [
         L.latLng(origemGeo.lat, origemGeo.lon),
         L.latLng(destinoGeo.lat, destinoGeo.lon)
       ],
       routeWhileDragging: false,
+      show: false, // Isso aqui esconde aquela caixa de texto branca no mapa!
       lineOptions: {
-        styles: [{color: '#111', opacity: 0.8, weight: 4}] // Linha do mapa escura e moderna
+        styles: [{color: '#111', opacity: 0.8, weight: 4}] 
       }
     }).addTo(map);
 
     // QUANDO ROTA CARREGAR
-    routingControl.on("routesfound", function(e){
-      const route = e.routes[0];
-      
-      const distanciaKm = (route.summary.totalDistance / 1000).toFixed(2);
-      const tempoMin = Math.floor(route.summary.totalTime / 60);
+    routingControl.on("routesfound", async function(e){
+      try {
+        const route = e.routes[0];
+        const distanciaKm = (route.summary.totalDistance / 1000).toFixed(2);
+        const tempoMin = Math.floor(route.summary.totalTime / 60);
 
-      atualizarCards(distanciaKm, tempoMin);
-      atualizarGraficos(distanciaKm);
-      salvarHistorico(origem, destino, distanciaKm);
+        // Tenta buscar o clima. Se a API falhar, não vai travar o resto!
+        let taChovendo = false;
+        try {
+           taChovendo = await buscarClima(origemGeo.lat, origemGeo.lon);
+        } catch (climaErro) {
+           console.log("Aviso: Não foi possível carregar o clima, assumindo tempo limpo.");
+        }
+
+        atualizarCards(distanciaKm, tempoMin, taChovendo);
+        atualizarGraficos(distanciaKm);
+        salvarHistorico(origem, destino, distanciaKm);
+        
+      } catch (erroInterno) {
+        console.error("Erro ao desenhar resultados:", erroInterno);
+      }
     });
 
   } catch(error) {
     console.error(error);
-    alert("Erro ao buscar rota. Tente novamente em alguns segundos.");
+    alert("Erro ao buscar rota. Verifique se o nome do local está correto.");
   }
 }
 
 // =====================================
 // BUSCAR COORDENADAS
 // =====================================
-
 async function buscarCoordenadas(local){
   const response = await fetch(
     `https://nominatim.openstreetmap.org/search?format=json&q=${local}`,
-    {
-      headers: {
-        "User-Agent": "Projeto_Academico_UPX4_Simulador_Mobilidade"
-      }
-    }
+    { headers: { "User-Agent": "Projeto_Academico_UPX4_Simulador_Mobilidade" } }
   );
-
   const data = await response.json();
-
   if(data.length === 0){
     throw new Error("Local não encontrado");
   }
-
   return data[0];
 }
 
 // =====================================
-// CARDS
+// CARDS & ESG
 // =====================================
+function atualizarCards(distanciaKm, tempoMin, taChovendo = false){
+  // 1. Controla os alertas visuais de clima
+  const alertChuva = document.getElementById("weatherAlert");
+  const alertSol = document.getElementById("goodWeatherAlert");
 
-function atualizarCards(distanciaKm, tempoMin){
+  if(alertChuva && alertSol) {
+    if(taChovendo) {
+      alertChuva.classList.remove("hidden");
+      alertSol.classList.add("hidden");
+    } else {
+      alertChuva.classList.add("hidden");
+      alertSol.classList.remove("hidden");
+    }
+  }
+
+  const multiplicadorClima = taChovendo ? 1.3 : 1;
+
   // CARRO
   document.getElementById("tempoCarro").innerText = `${Math.floor(tempoMin / 60)}h ${tempoMin % 60}min`;
   document.getElementById("custoCarro").innerText = `R$ ${(distanciaKm * 0.75).toFixed(2)}`;
@@ -127,31 +159,34 @@ function atualizarCards(distanciaKm, tempoMin){
   document.getElementById("custoOnibus").innerText = `R$ 4.40`;
   document.getElementById("co2Onibus").innerText = `${(distanciaKm * 0.08).toFixed(2)} kg`;
 
-  // BIKE
-  document.getElementById("tempoBike").innerText = `${Math.floor(distanciaKm / 15)}h ${Math.floor(((distanciaKm / 15) % 1) * 60)}min`;
+  // BIKE 
+  const tempoBikeMin = (distanciaKm / 15) * 60 * multiplicadorClima;
+  document.getElementById("tempoBike").innerText = `${Math.floor(tempoBikeMin / 60)}h ${Math.floor(tempoBikeMin % 60)}min`;
   document.getElementById("custoBike").innerText = `R$ 0.00`;
   document.getElementById("co2Bike").innerText = `0.00 kg`;
 
-  // WALK
-  document.getElementById("tempoWalk").innerText = `${Math.floor(distanciaKm / 5)}h ${Math.floor(((distanciaKm / 5) % 1) * 60)}min`;
+  // WALK 
+  const tempoWalkMin = (distanciaKm / 5) * 60 * multiplicadorClima;
+  document.getElementById("tempoWalk").innerText = `${Math.floor(tempoWalkMin / 60)}h ${Math.floor(tempoWalkMin % 60)}min`;
   document.getElementById("custoWalk").innerText = `R$ 0.00`;
   document.getElementById("co2Walk").innerText = `0.00 kg`;
 
-  // GAMIFICAÇÃO ESG: Regra de 3 (10kg de CO2 = 1 árvore)
+  // GAMIFICAÇÃO ESG
   const emissaoCarro = distanciaKm * 0.21;
   const arvores = (emissaoCarro / 10).toFixed(1);
-  document.getElementById("arvoresSalvas").innerText = arvores > 0 ? arvores : "--";
+  const arvoresElement = document.getElementById("arvoresSalvas");
+  if(arvoresElement) {
+    arvoresElement.innerText = arvores > 0 ? arvores : "--";
+  }
 }
 
 // =====================================
-// GRÁFICOS (CORES ATUALIZADAS)
+// GRÁFICOS
 // =====================================
-
 let chartTempo = null;
 let chartCO2 = null;
 let chartCusto = null;
 
-// Configuração global da fonte dos gráficos para bater com a interface
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.color = '#555';
 
@@ -160,7 +195,6 @@ function atualizarGraficos(distanciaKm){
   if(chartCO2){ chartCO2.destroy(); }
   if(chartCusto){ chartCusto.destroy(); }
 
-  // TEMPO
   chartTempo = new Chart(
     document.getElementById("graficoTempo"),
     {
@@ -169,24 +203,14 @@ function atualizarGraficos(distanciaKm){
         labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
         datasets: [{
           label: "Tempo (horas estimadas)",
-          data: [
-            distanciaKm / 60,
-            distanciaKm / 40,
-            distanciaKm / 15,
-            distanciaKm / 5
-          ],
+          data: [distanciaKm / 60, distanciaKm / 40, distanciaKm / 15, distanciaKm / 5],
           backgroundColor: '#111' 
         }]
       },
-      options: { 
-        responsive: true, 
-        maintainAspectRatio: false, 
-        borderRadius: 6 
-      }
+      options: { responsive: true, maintainAspectRatio: false, borderRadius: 6 }
     }
   );
 
-  // CO2
   chartCO2 = new Chart(
     document.getElementById("graficoCO2"),
     {
@@ -194,25 +218,15 @@ function atualizarGraficos(distanciaKm){
       data: {
         labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
         datasets: [{
-          data: [
-            distanciaKm * 0.21,
-            distanciaKm * 0.08,
-            0,
-            0
-          ],
+          data: [distanciaKm * 0.21, distanciaKm * 0.08, 0, 0],
           backgroundColor: ['#111', '#888', '#a3d9b1', '#eaeaea'],
           borderWidth: 0
         }]
       },
-      options: { 
-        responsive: true, 
-        maintainAspectRatio: false, 
-        cutout: '75%' 
-      }
+      options: { responsive: true, maintainAspectRatio: false, cutout: '75%' }
     }
   );
 
-  // CUSTO
   chartCusto = new Chart(
     document.getElementById("graficoCusto"),
     {
@@ -221,40 +235,27 @@ function atualizarGraficos(distanciaKm){
         labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
         datasets: [{
           label: "Custo (R$)",
-          data: [
-            distanciaKm * 0.75,
-            4.40,
-            0,
-            0
-          ],
+          data: [distanciaKm * 0.75, 4.40, 0, 0],
           backgroundColor: '#a3d9b1' 
         }]
       },
-      options: { 
-        responsive: true, 
-        maintainAspectRatio: false, 
-        borderRadius: 6 
-      }
+      options: { responsive: true, maintainAspectRatio: false, borderRadius: 6 }
     }
   );
 }
 
 // =====================================
-// HISTÓRICO (COM FILTRO DE PERFIL)
+// HISTÓRICO 
 // =====================================
-let filtroUsuarioAtual = "Todos"; // Começa mostrando as buscas de todo mundo
+let filtroUsuarioAtual = "Todos"; 
 
 function renderHistorico(){
-  // Pegamos o wrapper inteiro para injetar os botões de filtro no topo
   const wrapper = document.querySelector(".history-wrapper");
   if(!wrapper) return;
 
   const historico = JSON.parse(localStorage.getItem("historicoRotas")) || [];
-  
-  // Descobre quem são todas as pessoas que já pesquisaram
   const usuariosUnicos = ["Todos", ...new Set(historico.map(h => h.usuario || "Visitante"))];
 
-  // 1. Cria os botões de filtro
   let botoesHTML = `<div class="history-filters">`;
   usuariosUnicos.forEach(user => {
     const activeClass = user === filtroUsuarioAtual ? "active" : "";
@@ -262,12 +263,10 @@ function renderHistorico(){
   });
   botoesHTML += `</div>`;
 
-  // 2. Filtra a lista com base no botão clicado
   const listaFiltrada = filtroUsuarioAtual === "Todos" 
     ? historico 
     : historico.filter(h => (h.usuario || "Visitante") === filtroUsuarioAtual);
 
-  // 3. Monta os cards do histórico
   let cardsHTML = `<div id="historico-lista">`;
   
   if(listaFiltrada.length === 0) {
@@ -297,7 +296,6 @@ function renderHistorico(){
   wrapper.innerHTML = botoesHTML + cardsHTML;
 }
 
-// Função acionada quando clica no botão de filtro
 window.filtrarHistorico = function(usuario) {
   filtroUsuarioAtual = usuario;
   renderHistorico();
@@ -305,8 +303,6 @@ window.filtrarHistorico = function(usuario) {
 
 function salvarHistorico(origem, destino, distancia){
   const historico = JSON.parse(localStorage.getItem("historicoRotas")) || [];
-  
-  // Resgata o nome de quem está logado no momento
   const usuarioLogado = localStorage.getItem("usuarioAtual") || "Visitante";
 
   historico.push({ 
@@ -326,12 +322,10 @@ renderHistorico();
 // =====================================
 // FLUXO DE LOGIN / SAIR
 // =====================================
-
 function entrarApp() {
   const nomeDigitado = document.getElementById("inputNomeUsuario").value.trim();
   const textoSaudacao = document.getElementById("nomeDisplay");
-
-  // Define o nome e salva na memória local para o Histórico usar
+  
   const usuarioFinal = nomeDigitado !== "" ? nomeDigitado : "Visitante";
   textoSaudacao.innerText = `Olá, ${usuarioFinal}`;
   localStorage.setItem("usuarioAtual", usuarioFinal);
@@ -345,23 +339,19 @@ function entrarApp() {
 }
 
 function sairApp() {
-  // Recarrega a página instantaneamente para o estado zero
   window.location.reload();
 }
 
 // =====================================
 // EVENTOS DE TECLADO (ENTER)
 // =====================================
-
-// Enter na tela de Boas-Vindas
 document.getElementById("inputNomeUsuario").addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
-    event.preventDefault(); // Evita que a página recarregue do nada
+    event.preventDefault(); 
     entrarApp();
   }
 });
 
-// Enter no campo de Origem
 document.getElementById("origemInput").addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -369,7 +359,6 @@ document.getElementById("origemInput").addEventListener("keypress", function(eve
   }
 });
 
-// Enter no campo de Destino
 document.getElementById("destinoInput").addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
     event.preventDefault();

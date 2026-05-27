@@ -57,7 +57,17 @@
         Calcular Rota
       </button>
 
-      <section id="resultados">
+<section id="resultados">
+
+        <div id="weatherAlert" class="weather-alert hidden">
+          <i class="ph-fill ph-cloud-rain"></i>
+          <span>Chuva detectada na origem! Tempo de bike e caminhada penalizados (+30%).</span>
+        </div>
+
+        <div id="goodWeatherAlert" class="weather-alert good-weather hidden">
+          <i class="ph-fill ph-sun"></i>
+          <span>Tempo limpo! Condições ideais para trajetos ao ar livre.</span>
+        </div>
 
         <div class="transport-card active">
           <h3><i class="ph ph-car"></i> Carro</h3>
