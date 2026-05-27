@@ -287,8 +287,20 @@ renderHistorico();
 // =====================================
 
 function entrarApp() {
+  // Captura o que foi digitado no input
+  const nomeDigitado = document.getElementById("inputNomeUsuario").value.trim();
+  const textoSaudacao = document.getElementById("nomeDisplay");
+
+  // Se a pessoa digitou um nome, atualiza o texto. Se não, fica "Visitante".
+  if(nomeDigitado !== "") {
+    textoSaudacao.innerText = `Olá, ${nomeDigitado}`;
+  } else {
+    textoSaudacao.innerText = `Olá, Visitante`;
+  }
+
   // Esconde a tela de boas-vindas
-  document.getElementById("welcome-screen").classList.add("hidden");
+  const welcomeScreen = document.getElementById("welcome-screen");
+  if(welcomeScreen) welcomeScreen.classList.add("hidden");
   
   // Recalcula o tamanho do mapa para evitar bugs visuais ao entrar
   setTimeout(() => {

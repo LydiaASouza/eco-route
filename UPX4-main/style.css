@@ -426,6 +426,25 @@ body {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
+.welcome-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+  background: #fcfcfd;
+  outline: none;
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 24px;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.welcome-input:focus {
+  border-color: #222;
+  box-shadow: 0 0 0 3px rgba(34, 34, 34, 0.08);
+  background: #fff;
+}
 /* ===================================== */
 /* GAMIFICAÇÃO ESG */
 /* ===================================== */

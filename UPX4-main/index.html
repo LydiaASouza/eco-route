@@ -24,21 +24,22 @@
 <body>
 
   <div id="welcome-screen" class="welcome-overlay">
-  <div class="welcome-box">
-    <i class="ph-fill ph-leaf" style="color: #4CAF50; font-size: 56px; margin-bottom: 16px;"></i>
-    <h2>EcoRoute</h2>
-    <p>Simulador de Mobilidade Urbana</p>
-    <button class="btn-entrar" onclick="entrarApp()">Acessar Simulador</button>
-  </div>
-</div>
-
-  <div class="app-container">
+    <div class="welcome-box">
+      <i class="ph-fill ph-leaf" style="color: #4CAF50; font-size: 56px; margin-bottom: 16px;"></i>
+      <h2>EcoRoute</h2>
+      <p>Simulador de Mobilidade Urbana</p>
+      
+      <input type="text" id="inputNomeUsuario" class="welcome-input" placeholder="Digite seu nome..." autocomplete="off" />
+      
+      <button class="btn-entrar" onclick="entrarApp()">Acessar Simulador</button>
+    </div>
+  </div> <div class="app-container">
     <aside class="sidebar">
       
       <div class="brand">
         <div class="logo-area">
           <h1><i class="ph-fill ph-leaf" style="color: #4CAF50;"></i> EcoRoute</h1>
-          <span>Olá, Guest</span>
+          <span id="nomeDisplay">Olá, Visitante</span>
         </div>
       </div>
 
