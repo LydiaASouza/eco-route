@@ -265,3 +265,23 @@ function salvarHistorico(origem, destino, distancia){
 // Inicializa o histórico ao carregar a página
 renderHistorico();
 
+// =====================================
+// FLUXO DE LOGIN / SAIR
+// =====================================
+
+function entrarApp() {
+  // Esconde a tela de boas-vindas
+  document.getElementById("welcome-screen").classList.add("hidden");
+  
+  // Recalcula o tamanho do mapa para evitar bugs visuais ao entrar
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 300);
+}
+
+function sairApp() {
+  if(confirm("Deseja encerrar a sessão? O mapa será reiniciado.")) {
+    // Recarrega a página para o estado zero (volta para a tela de boas-vindas)
+    window.location.reload();
+  }
+}

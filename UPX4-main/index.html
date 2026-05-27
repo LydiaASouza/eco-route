@@ -23,6 +23,15 @@
 </head>
 <body>
 
+  <div id="welcome-screen" class="welcome-overlay">
+  <div class="welcome-box">
+    <i class="ph-fill ph-leaf" style="color: #4CAF50; font-size: 56px; margin-bottom: 16px;"></i>
+    <h2>EcoRoute</h2>
+    <p>Simulador de Mobilidade Urbana</p>
+    <button class="btn-entrar" onclick="entrarApp()">Acessar Simulador</button>
+  </div>
+</div>
+
   <div class="app-container">
     <aside class="sidebar">
       
@@ -138,7 +147,7 @@
             <i class="ph ph-clock-counter-clockwise"></i> Histórico
           </button>
         </div>
-        <button class="btn-sair">
+        <button class="btn-sair" onclick="sairApp()">
           Sair
         </button>
       </header>
