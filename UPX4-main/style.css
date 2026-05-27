@@ -616,3 +616,121 @@ body {
   height: 350px;
   width: 100%;
 }
+
+/* ===================================== */
+/* ACESSIBILIDADE: ALTO CONTRASTE (V3)   */
+/* ===================================== */
+.accessibility-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.accessibility-btn:hover {
+  color: #111;
+}
+
+/* 1. Fundo geral escuro (Mata o branco das abas Análise e Histórico) */
+body.high-contrast {
+  background-color: #121212 !important;
+}
+
+body.high-contrast .app-container,
+body.high-contrast .main-content,
+body.high-contrast .tab-content,
+body.high-contrast .analytics-container,
+body.high-contrast .history-wrapper {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+}
+
+/* 2. Escurecendo os cards apenas DENTRO do App (Protege a tela inicial) */
+body.high-contrast .app-container .sidebar,
+body.high-contrast .app-container .transport-card,
+body.high-contrast .app-container .insight-card,
+body.high-contrast .app-container .history-card,
+body.high-contrast .app-container header,
+body.high-contrast .app-container .chart-card,
+body.high-contrast .app-container .weather-alert,
+body.high-contrast .app-container .gamification-card {
+  background-color: #1e1e1e !important;
+  border-color: #333 !important;
+  box-shadow: none !important;
+}
+
+/* 3. Ícones da Análise e Filtros */
+body.high-contrast .app-container .insight-icon,
+body.high-contrast .app-container .filter-btn {
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+  color: #ccc !important;
+}
+
+body.high-contrast .app-container .filter-btn.active {
+  background-color: #a3d9b1 !important;
+  color: #121212 !important;
+}
+
+/* 4. Forçando textos a ficarem legíveis (Protegendo tela inicial) */
+body.high-contrast .app-container h1, 
+body.high-contrast .app-container h2, 
+body.high-contrast .app-container h3, 
+body.high-contrast .app-container h4,
+body.high-contrast .app-container span,
+body.high-contrast .app-container strong,
+body.high-contrast .app-container p,
+body.high-contrast .app-container i {
+  color: #f5f5f5 !important;
+}
+
+/* 5. Destaques (Verde Sustentável) */
+body.high-contrast .app-container .transport-card.active {
+  border-color: #a3d9b1 !important;
+  background-color: #243326 !important;
+}
+
+body.high-contrast .app-container .btn-calcular {
+  background-color: #a3d9b1 !important;
+  color: #121212 !important;
+  font-weight: bold;
+}
+
+/* Ajustando inputs de texto */
+body.high-contrast .app-container input {
+  background-color: #2a2a2a !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+/* 6. CORREÇÃO: Botão Sair Minimalista */
+body.high-contrast .app-container .btn-sair {
+  background-color: transparent !important;
+  border: 1px solid #ff6b6b !important;
+  color: #ff6b6b !important;
+}
+
+body.high-contrast .app-container .btn-sair:hover {
+  background-color: #ff6b6b !important;
+  color: #fff !important;
+}
+
+/* 7. CORREÇÃO: Nome do usuário no histórico visível */
+body.high-contrast .app-container .history-card span:last-child {
+  background-color: #333 !important;
+  color: #a3d9b1 !important;
+  border: 1px solid #444 !important;
+}
+
+/* 8. Mapa Noturno estilo GPS */
+body.high-contrast .leaflet-layer,
+body.high-contrast .leaflet-control-zoom-in,
+body.high-contrast .leaflet-control-zoom-out,
+body.high-contrast .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}

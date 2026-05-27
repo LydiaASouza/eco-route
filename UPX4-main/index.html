@@ -171,9 +171,17 @@
             <i class="ph ph-clock-counter-clockwise"></i> Histórico
           </button>
         </div>
-        <button class="btn-sair" onclick="sairApp()">
-          Sair
-        </button>
+
+        <!-- MODO DE ALTO CONTRASTE INJETADO AQUI -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button id="btnContraste" class="accessibility-btn" title="Alternar Alto Contraste">
+            <i class="ph ph-moon"></i>
+          </button>
+
+          <button class="btn-sair" onclick="sairApp()">
+            Sair
+          </button>
+        </div>
       </header>
 
       <section id="mapa" class="tab-content active">

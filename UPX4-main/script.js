@@ -355,3 +355,30 @@ document.getElementById("destinoInput").addEventListener("keypress", function(ev
     buscarRota();
   }
 });
+
+// =====================================
+// ALTO CONTRASTE (ACESSIBILIDADE)
+// =====================================
+const btnContraste = document.getElementById("btnContraste");
+const iconeContraste = btnContraste ? btnContraste.querySelector("i") : null;
+
+// Verifica a memória do navegador ao abrir o app
+if (localStorage.getItem("altoContraste") === "ativo") {
+  document.body.classList.add("high-contrast");
+  if(iconeContraste) iconeContraste.classList.replace("ph-moon", "ph-sun");
+}
+
+if(btnContraste) {
+  btnContraste.addEventListener("click", () => {
+    document.body.classList.toggle("high-contrast");
+    
+    // Troca o ícone e salva a preferência
+    if (document.body.classList.contains("high-contrast")) {
+      localStorage.setItem("altoContraste", "ativo");
+      iconeContraste.classList.replace("ph-moon", "ph-sun");
+    } else {
+      localStorage.setItem("altoContraste", "inativo");
+      iconeContraste.classList.replace("ph-sun", "ph-moon");
+    }
+  });
+}
