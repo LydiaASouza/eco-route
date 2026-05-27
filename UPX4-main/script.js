@@ -345,8 +345,34 @@ function entrarApp() {
 }
 
 function sairApp() {
-  if(confirm("Deseja encerrar a sessão? O mapa será reiniciado.")) {
-    // Recarrega a página para o estado zero (volta para a tela de boas-vindas)
-    window.location.reload();
-  }
+  // Recarrega a página instantaneamente para o estado zero
+  window.location.reload();
 }
+
+// =====================================
+// EVENTOS DE TECLADO (ENTER)
+// =====================================
+
+// Enter na tela de Boas-Vindas
+document.getElementById("inputNomeUsuario").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault(); // Evita que a página recarregue do nada
+    entrarApp();
+  }
+});
+
+// Enter no campo de Origem
+document.getElementById("origemInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    buscarRota();
+  }
+});
+
+// Enter no campo de Destino
+document.getElementById("destinoInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    buscarRota();
+  }
+});
