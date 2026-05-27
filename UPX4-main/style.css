@@ -483,3 +483,49 @@ body {
   color: #111;
   font-size: 16px;
 }
+
+/* ===================================== */
+/* FILTROS DE USUÁRIO (HISTÓRICO) */
+/* ===================================== */
+.history-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.filter-btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  background: #eaeaea;
+  color: #555;
+}
+
+.filter-btn:hover {
+  background: #ddd;
+}
+
+.filter-btn.active {
+  background: #111;
+  color: #fff;
+}
+
+.user-badge {
+  background: #f4fbf6;
+  border: 1px solid #a3d9b1;
+  color: #2e7d32;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

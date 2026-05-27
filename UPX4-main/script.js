@@ -240,46 +240,87 @@ function atualizarGraficos(distanciaKm){
 }
 
 // =====================================
-// HISTÓRICO (ÍCONES ATUALIZADOS)
+// HISTÓRICO (COM FILTRO DE PERFIL)
 // =====================================
+let filtroUsuarioAtual = "Todos"; // Começa mostrando as buscas de todo mundo
 
 function renderHistorico(){
-  const container = document.getElementById("historico-lista");
+  // Pegamos o wrapper inteiro para injetar os botões de filtro no topo
+  const wrapper = document.querySelector(".history-wrapper");
+  if(!wrapper) return;
+
   const historico = JSON.parse(localStorage.getItem("historicoRotas")) || [];
+  
+  // Descobre quem são todas as pessoas que já pesquisaram
+  const usuariosUnicos = ["Todos", ...new Set(historico.map(h => h.usuario || "Visitante"))];
 
-  container.innerHTML = "";
+  // 1. Cria os botões de filtro
+  let botoesHTML = `<div class="history-filters">`;
+  usuariosUnicos.forEach(user => {
+    const activeClass = user === filtroUsuarioAtual ? "active" : "";
+    botoesHTML += `<button class="filter-btn ${activeClass}" onclick="filtrarHistorico('${user}')">${user}</button>`;
+  });
+  botoesHTML += `</div>`;
 
-  historico.reverse().forEach(item => {
-    container.innerHTML += `
+  // 2. Filtra a lista com base no botão clicado
+  const listaFiltrada = filtroUsuarioAtual === "Todos" 
+    ? historico 
+    : historico.filter(h => (h.usuario || "Visitante") === filtroUsuarioAtual);
+
+  // 3. Monta os cards do histórico
+  let cardsHTML = `<div id="historico-lista">`;
+  
+  if(listaFiltrada.length === 0) {
+    cardsHTML += `<p style="color: #888; font-size: 14px; text-align: center; margin-top: 20px;">Nenhuma rota salva para este perfil.</p>`;
+  }
+
+  listaFiltrada.reverse().forEach(item => {
+    const nomeUser = item.usuario || "Visitante";
+    cardsHTML += `
       <div class="history-card">
-        <div class="history-title" style="display: flex; align-items: center; gap: 8px;">
-          <i class="ph ph-map-pin" style="color: #555;"></i> ${item.origem} 
-          <i class="ph ph-arrow-right" style="color: #ccc;"></i> 
-          <i class="ph ph-flag-checkered" style="color: #555;"></i> ${item.destino}
+        <div class="history-title" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <span style="display: flex; align-items: center; gap: 8px;">
+            <i class="ph ph-map-pin" style="color: #555;"></i> ${item.origem} 
+            <i class="ph ph-arrow-right" style="color: #ccc;"></i> 
+            <i class="ph ph-flag-checkered" style="color: #555;"></i> ${item.destino}
+          </span>
         </div>
-        <div class="history-sub">
-          Distância: ${item.distancia} km • ${item.data}
+        <div class="history-sub" style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+          <span>Distância: ${item.distancia} km • ${item.data}</span>
+          <span class="user-badge"><i class="ph-fill ph-user"></i> ${nomeUser}</span>
         </div>
       </div>
     `;
   });
+  cardsHTML += `</div>`;
+
+  wrapper.innerHTML = botoesHTML + cardsHTML;
+}
+
+// Função acionada quando clica no botão de filtro
+window.filtrarHistorico = function(usuario) {
+  filtroUsuarioAtual = usuario;
+  renderHistorico();
 }
 
 function salvarHistorico(origem, destino, distancia){
   const historico = JSON.parse(localStorage.getItem("historicoRotas")) || [];
+  
+  // Resgata o nome de quem está logado no momento
+  const usuarioLogado = localStorage.getItem("usuarioAtual") || "Visitante";
 
-  historico.push({
-    origem,
-    destino,
-    distancia,
-    data: new Date().toLocaleString()
+  historico.push({ 
+    usuario: usuarioLogado,
+    origem, 
+    destino, 
+    distancia, 
+    data: new Date().toLocaleString() 
   });
-
+  
   localStorage.setItem("historicoRotas", JSON.stringify(historico));
   renderHistorico();
 }
 
-// Inicializa o histórico ao carregar a página
 renderHistorico();
 
 // =====================================
@@ -287,22 +328,17 @@ renderHistorico();
 // =====================================
 
 function entrarApp() {
-  // Captura o que foi digitado no input
   const nomeDigitado = document.getElementById("inputNomeUsuario").value.trim();
   const textoSaudacao = document.getElementById("nomeDisplay");
 
-  // Se a pessoa digitou um nome, atualiza o texto. Se não, fica "Visitante".
-  if(nomeDigitado !== "") {
-    textoSaudacao.innerText = `Olá, ${nomeDigitado}`;
-  } else {
-    textoSaudacao.innerText = `Olá, Visitante`;
-  }
+  // Define o nome e salva na memória local para o Histórico usar
+  const usuarioFinal = nomeDigitado !== "" ? nomeDigitado : "Visitante";
+  textoSaudacao.innerText = `Olá, ${usuarioFinal}`;
+  localStorage.setItem("usuarioAtual", usuarioFinal);
 
-  // Esconde a tela de boas-vindas
   const welcomeScreen = document.getElementById("welcome-screen");
   if(welcomeScreen) welcomeScreen.classList.add("hidden");
   
-  // Recalcula o tamanho do mapa para evitar bugs visuais ao entrar
   setTimeout(() => {
     map.invalidateSize();
   }, 300);
