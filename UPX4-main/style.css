@@ -561,3 +561,58 @@ body {
   border: 1px solid #a3d9b1;
   color: #2e7d32;
 }
+
+/* ===================================== */
+/* PÓDIO DE INSIGHTS (ABA ANÁLISE) */
+/* ===================================== */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+  width: 100%;
+  grid-column: 1 / -1; /* Força a ocupar a linha toda do container */
+}
+
+.insight-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.insight-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #fcfcfd;
+  border: 1px solid #eaeaea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #111;
+}
+
+.insight-text span {
+  display: block;
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.insight-text h4 {
+  font-size: 15px;
+  color: #111;
+  font-weight: 700;
+}
+
+.large-chart {
+  grid-column: 1 / -1;
+  height: 350px;
+  width: 100%;
+}

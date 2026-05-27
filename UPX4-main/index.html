@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EcoRoute</title>
 
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍃</text></svg>">
+
   <link rel="stylesheet" href="style.css" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -178,17 +180,39 @@
         <div id="map"></div>
       </section>
 
-      <section id="analise" class="tab-content">
+<section id="analise" class="tab-content">
         <div class="analytics-container">
-          <div class="chart-card">
-            <canvas id="graficoTempo"></canvas>
+          
+          <div class="insights-grid">
+            <div class="insight-card">
+              <div class="insight-icon"><i class="ph ph-lightning"></i></div>
+              <div class="insight-text">
+                <span>Mais Rápido</span>
+                <h4 id="insightRapido">--</h4>
+              </div>
+            </div>
+            
+            <div class="insight-card">
+              <div class="insight-icon" style="color: #4CAF50;"><i class="ph ph-leaf"></i></div>
+              <div class="insight-text">
+                <span>Mais Ecológico</span>
+                <h4 id="insightEco">--</h4>
+              </div>
+            </div>
+            
+            <div class="insight-card">
+              <div class="insight-icon" style="color: #2196F3;"><i class="ph ph-piggy-bank"></i></div>
+              <div class="insight-text">
+                <span>Melhor Custo</span>
+                <h4 id="insightBarato">--</h4>
+              </div>
+            </div>
           </div>
-          <div class="chart-card">
-            <canvas id="graficoCusto"></canvas>
+
+          <div class="chart-card large-chart">
+            <canvas id="graficoResumo"></canvas>
           </div>
-          <div class="chart-card">
-            <canvas id="graficoCO2"></canvas>
-          </div>
+          
         </div>
       </section>
 

@@ -149,6 +149,18 @@ function atualizarCards(distanciaKm, tempoMin, taChovendo = false){
 
   const multiplicadorClima = taChovendo ? 1.3 : 1;
 
+  // INSIGHTS DA ABA ANÁLISE (O PÓDIO)
+  const formataTempo = (minutos) => `${Math.floor(minutos / 60)}h ${Math.floor(minutos % 60)}min`;
+  
+  const insightRapido = document.getElementById("insightRapido");
+  if(insightRapido) insightRapido.innerText = `Carro (${formataTempo(tempoMin)})`;
+
+  const insightEco = document.getElementById("insightEco");
+  if(insightEco) insightEco.innerText = `Bike (0kg CO₂ / Saudável)`;
+
+  const insightBarato = document.getElementById("insightBarato");
+  if(insightBarato) insightBarato.innerText = `Caminhada (R$ 0,00)`;
+
   // CARRO
   document.getElementById("tempoCarro").innerText = `${Math.floor(tempoMin / 60)}h ${tempoMin % 60}min`;
   document.getElementById("custoCarro").innerText = `R$ ${(distanciaKm * 0.75).toFixed(2)}`;
@@ -181,65 +193,43 @@ function atualizarCards(distanciaKm, tempoMin, taChovendo = false){
 }
 
 // =====================================
-// GRÁFICOS
+// GRÁFICO (ÚNICO)
 // =====================================
-let chartTempo = null;
-let chartCO2 = null;
-let chartCusto = null;
+let chartResumo = null;
 
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.color = '#555';
 
 function atualizarGraficos(distanciaKm){
-  if(chartTempo){ chartTempo.destroy(); }
-  if(chartCO2){ chartCO2.destroy(); }
-  if(chartCusto){ chartCusto.destroy(); }
+  // Se o gráfico já existir, destrói para desenhar um novo
+  if(chartResumo){ chartResumo.destroy(); }
 
-  chartTempo = new Chart(
-    document.getElementById("graficoTempo"),
+  chartResumo = new Chart(
+    document.getElementById("graficoResumo"),
     {
       type: "bar",
       data: {
-        labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
+        labels: ["Carro", "Ônibus", "Bicicleta", "Caminhada"],
         datasets: [{
-          label: "Tempo (horas estimadas)",
-          data: [distanciaKm / 60, distanciaKm / 40, distanciaKm / 15, distanciaKm / 5],
-          backgroundColor: '#111' 
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, borderRadius: 6 }
-    }
-  );
-
-  chartCO2 = new Chart(
-    document.getElementById("graficoCO2"),
-    {
-      type: "doughnut",
-      data: {
-        labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
-        datasets: [{
-          data: [distanciaKm * 0.21, distanciaKm * 0.08, 0, 0],
+          label: "Emissão de CO₂ (kg)",
+          data: [(distanciaKm * 0.21).toFixed(2), (distanciaKm * 0.08).toFixed(2), 0, 0],
           backgroundColor: ['#111', '#888', '#a3d9b1', '#eaeaea'],
-          borderWidth: 0
+          borderRadius: 6
         }]
       },
-      options: { responsive: true, maintainAspectRatio: false, cutout: '75%' }
-    }
-  );
-
-  chartCusto = new Chart(
-    document.getElementById("graficoCusto"),
-    {
-      type: "bar",
-      data: {
-        labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
-        datasets: [{
-          label: "Custo (R$)",
-          data: [distanciaKm * 0.75, 4.40, 0, 0],
-          backgroundColor: '#a3d9b1' 
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, borderRadius: 6 }
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }, /* Esconde aquela legenda repetitiva */
+          title: {
+            display: true,
+            text: 'Pegada de Carbono da Rota (Emissão de CO₂)',
+            font: { size: 14, family: "'Inter', sans-serif" },
+            padding: { bottom: 20 }
+          }
+        }
+      }
     }
   );
 }
