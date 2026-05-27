@@ -175,10 +175,14 @@ function atualizarGraficos(distanciaKm){
             distanciaKm / 15,
             distanciaKm / 5
           ],
-          backgroundColor: '#111' // Preto elegante
+          backgroundColor: '#111' 
         }]
       },
-      options: { borderRadius: 6 }
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        borderRadius: 6 
+      }
     }
   );
 
@@ -200,7 +204,11 @@ function atualizarGraficos(distanciaKm){
           borderWidth: 0
         }]
       },
-      options: { cutout: '75%' }
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        cutout: '75%' 
+      }
     }
   );
 
@@ -219,10 +227,14 @@ function atualizarGraficos(distanciaKm){
             0,
             0
           ],
-          backgroundColor: '#a3d9b1' // Verde menta suave
+          backgroundColor: '#a3d9b1' 
         }]
       },
-      options: { borderRadius: 6 }
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        borderRadius: 6 
+      }
     }
   );
 }
