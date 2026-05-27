@@ -1,331 +1,267 @@
-// ========================
-// ELEMENTOS DOM
-// ========================
-const distanciaInput = document.getElementById("distancia");
-const kmValue = document.getElementById("kmValue");
+// =====================================
+// ABAS
+// =====================================
 
-console.log ("primeiro");
-let graficoTempo, graficoCusto, graficoCO2;
+const tabButtons = document.querySelectorAll(".tab-btn");
+const tabContents = document.querySelectorAll(".tab-content");
 
+tabButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    tabButtons.forEach(b => b.classList.remove("active"));
+    tabContents.forEach(c => c.classList.remove("active"));
 
-// ========================
-// EVENTOS
-// ========================
-distanciaInput.oninput = () => {
-  kmValue.innerText = distanciaInput.value;
-};
+    btn.classList.add("active");
 
+    const tabId = btn.dataset.tab;
+    document.getElementById(tabId).classList.add("active");
 
-// ========================
-// CÁLCULOS
-// ========================
-function calcular(d, t) {
-  return {
-    carro: {
-      tempo: t,
-      custo: d * 0.75,
-      co2: d * 0.21
-    },
-    onibus: {
-      tempo: (d / 18) * 60,
-      custo: 4.40,
-      co2: d * 0.08
-    },
-    bike: {
-      tempo: (d / 15) * 60,
-      custo: 0,
-      co2: 0
-    },
-    caminhada: {
-      tempo: (d / 5) * 60,
-      custo: 0,
-      co2: 0
-    }
-  };
-}
-
-function formatarTempo(min) {
-  if (min >= 60) {
-    let h = Math.floor(min / 60);
-    let m = Math.round(min % 60);
-    return `${h}h ${m}min`;
-  }
-  return `${Math.round(min)} min`;
-}
-
-
-// ========================
-// UI (CARDS)
-// ========================
-function criarCard(nome, dados, destaque="") {
-  return `
-    <div class="card ${destaque}">
-      <h3>${nome}</h3>
-      <div class="info">⏱ Tempo: ${formatarTempo(dados.tempo)}</div>
-      <div class="info">💰 Custo: R$ ${dados.custo.toFixed(2)}</div>
-      <div class="info">🌱 CO₂: ${dados.co2.toFixed(2)} kg</div>
-    </div>
-  `;
-}
-
-
-// ========================
-// GRÁFICOS
-// ========================
-function gerarGraficos(r) {
-  const labels = ["Carro", "Ônibus", "Bicicleta", "Caminhada"];
-
-  const tempo = [r.carro.tempo, r.onibus.tempo, r.bike.tempo, r.caminhada.tempo];
-  const custo = [r.carro.custo, r.onibus.custo, r.bike.custo, r.caminhada.custo];
-  const co2 = [r.carro.co2, r.onibus.co2, r.bike.co2, r.caminhada.co2];
-
-  if (graficoTempo) graficoTempo.destroy();
-  if (graficoCusto) graficoCusto.destroy();
-  if (graficoCO2) graficoCO2.destroy();
-
-  graficoTempo = new Chart(document.getElementById("graficoTempo"), {
-    type: "bar",
-    data: { labels, datasets: [{ data: tempo }] },
-    options: { indexAxis: 'y' }
-  });
-
-  graficoCusto = new Chart(document.getElementById("graficoCusto"), {
-    type: "bar",
-    data: { labels, datasets: [{ data: custo }] },
-    options: { indexAxis: 'y' }
-  });
-
-  graficoCO2 = new Chart(document.getElementById("graficoCO2"), {
-    type: "bar",
-    data: { labels, datasets: [{ data: co2 }] },
-    options: { indexAxis: 'y' }
-  });
-}
-
-
-// ========================
-// SIMULAÇÃO
-// ========================
-function simular(distancia, tempoMin) {
-  const r = calcular(distancia, tempoMin);
-
-  let maisRapido = Object.keys(r).reduce((a, b) => r[a].tempo < r[b].tempo ? a : b);
-  let maisBarato = Object.keys(r).reduce((a, b) => r[a].custo < r[b].custo ? a : b);
-  let maisVerde = Object.keys(r).reduce((a, b) => r[a].co2 < r[b].co2 ? a : b);
-
-  let html = "";
-
-  html += criarCard("🚗 Carro", r.carro, maisRapido==="carro" ? "destaque" : "");
-  html += criarCard("🚌 Ônibus", r.onibus, maisRapido==="onibus" ? "destaque" : "");
-  html += criarCard("🚴 Bicicleta", r.bike, maisBarato==="bike" ? "destaque" : "");
-  html += criarCard("🚶 Caminhada", r.caminhada, maisVerde==="caminhada" ? "destaque" : "");
-
-  document.getElementById("resultados").innerHTML = html;
-
-  gerarGraficos(r);
-}
-
-
-// ========================
-// MAPA + ROTA
-// ========================
-let map;
-let origem = null;
-let destino = null;
-let rotaControl = null;
-let markerOrigem = null;
-let markerDestino = null;
-
-document.addEventListener("DOMContentLoaded", function () {
-  map = L.map('map').setView([-23.5505, -46.6333], 13);
-  
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
-  
-  //Evento de clique
-  map.on('click', function(e) {
-
-    //Primeiro clique -> Origem
-    if (!origem) {
-      origem = e.latlng;
-
-      L.maker(origem).addTo(map)
-      .binfPopup("Origem")
-      .openPopup();
-
-    //Segundo clique -> Destino
-    } else if (!destino) {
-      destino = e.latlng;
-
-      desenharRota();
-
-    //Terceiro clique -> reset
-    } else {
-      limparMapa();
-
-      origem = e.latlng;
-      destino = null;
-
-      L.marker(origem).addTo(map)
-      .bindPopup("Origem")
-      .openPopup();
+    // Corrige tamanho do mapa ao mudar de aba
+    if(tabId === "mapa"){
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 200);
     }
   });
 });
 
-function desenharRota () {
-  if (rotaControl) {
-    map.removeControl(rotaControl);
-  }
+// =====================================
+// MAPA
+// =====================================
 
-  rotaControl = L.Routing.control({
-    waypoints: [
-      L.latLng(origem.lat, origem.lng),
-      L.latLng(destino.lat, destino.lng)
-    ],
-    routeWhileDragging: false
-  }).addTo(map);
+const map = L.map("map").setView([-23.55052, -46.633308], 8);
 
-  rotaControl.on('routesfound', function(e) {
-    const rota = e.routes[0];
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
 
-    const distanciaKm = rota.summary.totalDistance / 1000;
-    const tempoMin = rota.summary.totalTime / 60;
+let routingControl = null;
 
-    console.log("Distância:", distanciaKm);
-    console.log("Tempo:", tempoMin);
-  });
-}
+// =====================================
+// BUSCAR ROTA
+// =====================================
 
-function limparMapa() {
-  map.eachLayer(layer => {
-    if (layer instanceof L.Maker || layer instanceof L.Polyline) {
-    }
-  });
+async function buscarRota(){
+  const origem = document.getElementById("origemInput").value;
+  const destino = document.getElementById("destinoInput").value;
 
-  if (rotaControl) {
-    map.removeControl(rotaControl);
-  }
-}
-
-async function buscarCoordenadas(endereco) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(endereco)}`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  if (!data || data.length === 0) {
-    alert("Endereço não encontrado!");
-    return null;
-  }
-
-  return {
-    lat: parseFloat(data[0].lat),
-    lng: parseFloat(data[0].lon),
-    nome: data[0].display_name
-  };
-}
-
-async function buscarRota() {
-  const origemTexto = document.getElementById("origemInput").value;
-  const destinoTexto = document.getElementById("destinoInput").value;
-
-  if (!origemTexto || !destinoTexto) {
-    alert("Preencha origem e destino!");
+  if(!origem || !destino){
+    alert("Preencha origem e destino");
     return;
   }
 
-  const origemCoord = await buscarCoordenadas(origemTexto);
-  const destinoCoord = await buscarCoordenadas(destinoTexto);
+  try {
+    // GEOCODIFICAÇÃO
+    const origemGeo = await buscarCoordenadas(origem);
+    const destinoGeo = await buscarCoordenadas(destino);
 
-  if (!origemCoord || !destinoCoord) return;
+    // LIMPA ROTA ANTERIOR
+    if(routingControl){
+      map.removeControl(routingControl);
+    }
 
-  desenharRotaManual(origemCoord, destinoCoord);
+    // NOVA ROTA
+    routingControl = L.Routing.control({
+      waypoints: [
+        L.latLng(origemGeo.lat, origemGeo.lon),
+        L.latLng(destinoGeo.lat, destinoGeo.lon)
+      ],
+      routeWhileDragging: false,
+      lineOptions: {
+        styles: [{color: '#111', opacity: 0.8, weight: 4}] // Linha do mapa escura e moderna
+      }
+    }).addTo(map);
+
+    // QUANDO ROTA CARREGAR
+    routingControl.on("routesfound", function(e){
+      const route = e.routes[0];
+      
+      const distanciaKm = (route.summary.totalDistance / 1000).toFixed(2);
+      const tempoMin = Math.floor(route.summary.totalTime / 60);
+
+      atualizarCards(distanciaKm, tempoMin);
+      atualizarGraficos(distanciaKm);
+      salvarHistorico(origem, destino, distanciaKm);
+    });
+
+  } catch(error) {
+    console.error(error);
+    alert("Erro ao buscar rota. Tente novamente em alguns segundos.");
+  }
 }
 
-function desenharRotaManual(origem, destino) {
+// =====================================
+// BUSCAR COORDENADAS
+// =====================================
 
-  // remove rota antiga
-  if (rotaControl) {
-    map.removeControl(rotaControl);
+async function buscarCoordenadas(local){
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${local}`,
+    {
+      headers: {
+        "User-Agent": "Projeto_Academico_UPX4_Simulador_Mobilidade"
+      }
+    }
+  );
+
+  const data = await response.json();
+
+  if(data.length === 0){
+    throw new Error("Local não encontrado");
   }
 
-  // remove marcadores antigos
-  if (markerOrigem) map.removeLayer(markerOrigem);
-  if (markerDestino) map.removeLayer(markerDestino);
+  return data[0];
+}
 
-  // cria novos marcadores
-  markerOrigem = L.marker([origem.lat, origem.lng])
-    .addTo(map)
-    .bindPopup("Origem")
-    .openPopup();
+// =====================================
+// CARDS
+// =====================================
 
-  markerDestino = L.marker([destino.lat, destino.lng])
-    .addTo(map)
-    .bindPopup("Destino");
+function atualizarCards(distanciaKm, tempoMin){
+  // CARRO
+  document.getElementById("tempoCarro").innerText = `${Math.floor(tempoMin / 60)}h ${tempoMin % 60}min`;
+  document.getElementById("custoCarro").innerText = `R$ ${(distanciaKm * 0.75).toFixed(2)}`;
+  document.getElementById("co2Carro").innerText = `${(distanciaKm * 0.21).toFixed(2)} kg`;
 
-  // cria rota
-  rotaControl = L.Routing.control({
-    waypoints: [
-      L.latLng(origem.lat, origem.lng),
-      L.latLng(destino.lat, destino.lng)
-    ],
-    routeWhileDragging: false
-  }).addTo(map);
+  // ÔNIBUS
+  document.getElementById("tempoOnibus").innerText = `${Math.floor((tempoMin * 1.5) / 60)}h ${Math.floor((tempoMin * 1.5) % 60)}min`;
+  document.getElementById("custoOnibus").innerText = `R$ 4.40`;
+  document.getElementById("co2Onibus").innerText = `${(distanciaKm * 0.08).toFixed(2)} kg`;
 
-  rotaControl.on('routesfound', function(e) {
-    const rota = e.routes[0];
+  // BIKE
+  document.getElementById("tempoBike").innerText = `${Math.floor(distanciaKm / 15)}h ${Math.floor(((distanciaKm / 15) % 1) * 60)}min`;
+  document.getElementById("custoBike").innerText = `R$ 0.00`;
+  document.getElementById("co2Bike").innerText = `0.00 kg`;
 
-    const distanciaKm = rota.summary.totalDistance / 1000;
-    const tempoMin = rota.summary.totalTime / 60;
-    simular(distanciaKm, tempoMin);
+  // WALK
+  document.getElementById("tempoWalk").innerText = `${Math.floor(distanciaKm / 5)}h ${Math.floor(((distanciaKm / 5) % 1) * 60)}min`;
+  document.getElementById("custoWalk").innerText = `R$ 0.00`;
+  document.getElementById("co2Walk").innerText = `0.00 kg`;
+}
 
-    console.log("Rota", rota.summary);
+// =====================================
+// GRÁFICOS (CORES ATUALIZADAS)
+// =====================================
+
+let chartTempo = null;
+let chartCO2 = null;
+let chartCusto = null;
+
+// Configuração global da fonte dos gráficos para bater com a interface
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = '#555';
+
+function atualizarGraficos(distanciaKm){
+  if(chartTempo){ chartTempo.destroy(); }
+  if(chartCO2){ chartCO2.destroy(); }
+  if(chartCusto){ chartCusto.destroy(); }
+
+  // TEMPO
+  chartTempo = new Chart(
+    document.getElementById("graficoTempo"),
+    {
+      type: "bar",
+      data: {
+        labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
+        datasets: [{
+          label: "Tempo (horas estimadas)",
+          data: [
+            distanciaKm / 60,
+            distanciaKm / 40,
+            distanciaKm / 15,
+            distanciaKm / 5
+          ],
+          backgroundColor: '#111' // Preto elegante
+        }]
+      },
+      options: { borderRadius: 6 }
+    }
+  );
+
+  // CO2
+  chartCO2 = new Chart(
+    document.getElementById("graficoCO2"),
+    {
+      type: "doughnut",
+      data: {
+        labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
+        datasets: [{
+          data: [
+            distanciaKm * 0.21,
+            distanciaKm * 0.08,
+            0,
+            0
+          ],
+          backgroundColor: ['#111', '#888', '#a3d9b1', '#eaeaea'],
+          borderWidth: 0
+        }]
+      },
+      options: { cutout: '75%' }
+    }
+  );
+
+  // CUSTO
+  chartCusto = new Chart(
+    document.getElementById("graficoCusto"),
+    {
+      type: "bar",
+      data: {
+        labels: ["Carro", "Ônibus", "Bike", "Caminhada"],
+        datasets: [{
+          label: "Custo (R$)",
+          data: [
+            distanciaKm * 0.75,
+            4.40,
+            0,
+            0
+          ],
+          backgroundColor: '#a3d9b1' // Verde menta suave
+        }]
+      },
+      options: { borderRadius: 6 }
+    }
+  );
+}
+
+// =====================================
+// HISTÓRICO (ÍCONES ATUALIZADOS)
+// =====================================
+
+function renderHistorico(){
+  const container = document.getElementById("historico-lista");
+  const historico = JSON.parse(localStorage.getItem("historicoRotas")) || [];
+
+  container.innerHTML = "";
+
+  historico.reverse().forEach(item => {
+    container.innerHTML += `
+      <div class="history-card">
+        <div class="history-title" style="display: flex; align-items: center; gap: 8px;">
+          <i class="ph ph-map-pin" style="color: #555;"></i> ${item.origem} 
+          <i class="ph ph-arrow-right" style="color: #ccc;"></i> 
+          <i class="ph ph-flag-checkered" style="color: #555;"></i> ${item.destino}
+        </div>
+        <div class="history-sub">
+          Distância: ${item.distancia} km • ${item.data}
+        </div>
+      </div>
+    `;
+  });
+}
+
+function salvarHistorico(origem, destino, distancia){
+  const historico = JSON.parse(localStorage.getItem("historicoRotas")) || [];
+
+  historico.push({
+    origem,
+    destino,
+    distancia,
+    data: new Date().toLocaleString()
   });
 
-  // centraliza no mapa
-  map.setView([origem.lat, origem.lng], 13);
+  localStorage.setItem("historicoRotas", JSON.stringify(historico));
+  renderHistorico();
 }
 
-function simularLogin(nomeUsuario) {
-    // Salva o usuário no navegador
-    localStorage.setItem('usuarioAtivo', nomeUsuario);
-    atualizarInterface();
-}
+// Inicializa o histórico ao carregar a página
+renderHistorico();
 
-function verificarSessao() {
-    const usuario = localStorage.getItem('usuarioAtivo');
-    if (usuario) {
-        console.log(`Bem-vindo de volta, ${usuario}`);
-        // Esconder formulário de login e mostrar o simulador
-    }
-}
-
-function fazerLogout() {
-    localStorage.removeItem('usuarioAtivo');
-    // Voltar para a tela de login
-}
-
-function salvarSimulacao(origem, destino, resultados) {
-    // Puxa o histórico atual ou cria um array vazio se não existir
-    let historico = JSON.parse(localStorage.getItem('historicoSimulacoes')) || [];
-    
-    // Cria o novo registro
-    const novaSimulacao = {
-        data: new Date().toLocaleDateString(),
-        origem,
-        destino,
-        ...resultados
-    };
-    
-    // Adiciona ao início do array e salva novamente
-    historico.unshift(novaSimulacao);
-    localStorage.setItem('historicoSimulacoes', JSON.stringify(historico));
-}
-
-function carregarHistorico() {
-    const historico = JSON.parse(localStorage.getItem('historicoSimulacoes')) || [];
-    // Aqui você iteraria sobre o 'historico' para popular uma <table> ou <ul> no HTML
-    console.log(historico);
-}

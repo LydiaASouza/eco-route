@@ -1,65 +1,175 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Simulador de Mobilidade</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-</head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EcoRoute</title>
 
+  <link rel="stylesheet" href="style.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
 <body>
 
-<header>
-  <h1>⚡ Simulador de Mobilidade</h1>
-  <p>Compare tempo, custo e emissão de CO₂</p>
-</header>
+  <div class="app-container">
+    <aside class="sidebar">
+      
+      <div class="brand">
+        <div class="logo-area">
+          <h1><i class="ph-fill ph-leaf" style="color: #4CAF50;"></i> EcoRoute</h1>
+          <span>Olá, Lydia</span>
+        </div>
+      </div>
 
-<section class="input-area">
-  <label>Distância: <span id="kmValue">10</span> km</label>
-  <input type="range" min="1" max="50" value="10" id="distancia">
-  <button onclick="simular()">Simular →</button>
-</section>
+      <div class="input-group">
+        <label><i class="ph ph-map-pin"></i> Origem</label>
+        <input type="text" id="origemInput" placeholder="Ex: Pátio Cianê Shopping" />
+      </div>
 
-<section id="resultados"></section>
+      <div class="input-group">
+        <label><i class="ph ph-flag-checkered"></i> Destino</label>
+        <input type="text" id="destinoInput" placeholder="Ex: São Paulo" />
+      </div>
 
-<section class="graficos">
-  <div class="grafico-card">
-    <h3>⏱ Tempo de Deslocamento</h3>
-    <canvas id="graficoTempo"></canvas>
+      <button class="btn-calcular" onclick="buscarRota()">
+        Calcular Rota
+      </button>
+
+      <section id="resultados">
+
+        <div class="transport-card active">
+          <h3><i class="ph ph-car"></i> Carro</h3>
+          <div class="transport-grid">
+            <div>
+              <span><i class="ph ph-clock"></i> Tempo</span>
+              <strong id="tempoCarro">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-currency-dollar"></i> Custo</span>
+              <strong id="custoCarro">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-plant"></i> CO₂</span>
+              <strong id="co2Carro">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport-card">
+          <h3><i class="ph ph-bus"></i> Ônibus</h3>
+          <div class="transport-grid">
+            <div>
+              <span><i class="ph ph-clock"></i> Tempo</span>
+              <strong id="tempoOnibus">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-currency-dollar"></i> Custo</span>
+              <strong id="custoOnibus">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-plant"></i> CO₂</span>
+              <strong id="co2Onibus">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport-card">
+          <h3><i class="ph ph-bicycle"></i> Bicicleta</h3>
+          <div class="transport-grid">
+            <div>
+              <span><i class="ph ph-clock"></i> Tempo</span>
+              <strong id="tempoBike">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-currency-dollar"></i> Custo</span>
+              <strong id="custoBike">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-plant"></i> CO₂</span>
+              <strong id="co2Bike">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport-card">
+          <h3><i class="ph ph-person-simple-walk"></i> Caminhada</h3>
+          <div class="transport-grid">
+            <div>
+              <span><i class="ph ph-clock"></i> Tempo</span>
+              <strong id="tempoWalk">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-currency-dollar"></i> Custo</span>
+              <strong id="custoWalk">--</strong>
+            </div>
+            <div>
+              <span><i class="ph ph-plant"></i> CO₂</span>
+              <strong id="co2Walk">--</strong>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </aside>
+
+    <main class="main-content">
+      
+      <header class="top-header">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="mapa">
+            <i class="ph ph-map"></i> Mapa
+          </button>
+          <button class="tab-btn" data-tab="analise">
+            <i class="ph ph-chart-bar"></i> Análise
+          </button>
+          <button class="tab-btn" data-tab="historico">
+            <i class="ph ph-clock-counter-clockwise"></i> Histórico
+          </button>
+        </div>
+        <button class="btn-sair">
+          Sair
+        </button>
+      </header>
+
+      <section id="mapa" class="tab-content active">
+        <div id="map"></div>
+      </section>
+
+      <section id="analise" class="tab-content">
+        <div class="analytics-container">
+          <div class="chart-card">
+            <canvas id="graficoTempo"></canvas>
+          </div>
+          <div class="chart-card">
+            <canvas id="graficoCusto"></canvas>
+          </div>
+          <div class="chart-card">
+            <canvas id="graficoCO2"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="historico" class="tab-content">
+        <div class="history-wrapper">
+          <div id="historico-lista"></div>
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <div class="grafico-card">
-    <h3>💰 Custo Estimado</h3>
-    <canvas id="graficoCusto"></canvas>
-  </div>
-
-  <div class="grafico-card">
-    <h3>🌱 Emissão de CO₂</h3>
-    <canvas id="graficoCO2"></canvas>
-  </div>
-</section>
-
-</section> <!-- fecha os gráficos -->
-
-<section class="rota-input">
-  <input type="text" id="origemInput" placeholder="Digite a origem">
-  <input type="text" id="destinoInput" placeholder="Digite o destino">
-  <button onclick="buscarRota()">Buscar rota</button>
-</section>
-
-<section class="mapa">
-  <h3>🗺 Visualização do trajeto</h3>
-  <div id="map" style="height: 400px;"></div>
-</section>
-
-<footer>
-  Simulador de Mobilidade Urbana — Dados estimados para trajetos urbanos
-</footer>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

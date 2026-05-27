@@ -1,92 +1,357 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
 }
 
-header {
-  text-align: center;
-  padding: 40px;
-  background: #fff;
+body {
+  background: #fafafc; /* Fundo off-white super moderno */
+  overflow: hidden;
+  color: #333;
 }
 
-h1 {
-  font-size: 32px;
-}
-
-.input-area {
-  background: #fff;
-  margin: 20px auto;
-  padding: 30px;
-  width: 60%;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-input[type=range] {
-  width: 80%;
-  margin: 20px 0;
-}
-
-button {
-  background: #1e9e6a;
-  color: white;
-  border: none;
-  padding: 12px 40px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background: #157a52;
-}
-
-#resultados {
+/* ===================================== */
+/* APP */
+/* ===================================== */
+.app-container {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding: 20px;
+  width: 100%;
+  height: 100vh;
 }
 
-.card {
-  background: white;
-  padding: 20px;
-  width: 220px;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+/* ===================================== */
+/* SIDEBAR */
+/* ===================================== */
+.sidebar {
+  width: 380px;
+  min-width: 380px;
+  background: #ffffff;
+  padding: 32px 28px;
+  overflow-y: auto;
+  border-right: 1px solid #eaeaea;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+  z-index: 10;
 }
 
-.card.destaque {
-  border: 2px solid #1e9e6a;
+/* ===================================== */
+/* BRAND */
+/* ===================================== */
+.brand {
+  margin-bottom: 36px;
 }
 
-.info {
-  margin: 8px 0;
-}
-
-/* GRÁFICOS */
-
-.graficos {
+.logo-area h1 {
+  font-size: 24px;
+  color: #111;
+  font-weight: 700;
+  margin-bottom: 4px;
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.5px;
 }
 
-.grafico-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 300px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+.logo-area span {
+  color: #888;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-footer {
-  text-align: center;
-  padding: 20px;
+/* ===================================== */
+/* INPUTS */
+/* ===================================== */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
   color: #555;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+  background: #fcfcfd;
+  outline: none;
+  font-size: 15px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #222;
+  box-shadow: 0 0 0 3px rgba(34, 34, 34, 0.08);
+  background: #fff;
+}
+
+/* ===================================== */
+/* BOTÃO */
+/* ===================================== */
+.btn-calcular {
+  width: 100%;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  background: #111; /* Preto elegante */
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 32px;
+}
+
+.btn-calcular:hover {
+  background: #333;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ===================================== */
+/* CARDS */
+/* ===================================== */
+.transport-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.transport-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.transport-card.active {
+  background: #f4fbf6; /* Fundo verde menta bem sutil */
+  border: 1px solid #a3d9b1;
+}
+
+.transport-card h3 {
+  margin-bottom: 18px;
+  color: #222;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.transport-card h3 i {
+  font-size: 20px;
+  color: #555;
+}
+
+.transport-card.active h3 i {
+  color: #4CAF50;
+}
+
+.transport-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.transport-grid div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transport-grid span {
+  color: #777;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.transport-grid strong {
+  color: #111;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ===================================== */
+/* MAIN */
+/* ===================================== */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===================================== */
+/* HEADER */
+/* ===================================== */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* ===================================== */
+/* TABS */
+/* ===================================== */
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-btn {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.tab-btn.active {
+  background: #111;
+  color: #fff;
+}
+
+/* ===================================== */
+/* SAIR */
+/* ===================================== */
+.btn-sair {
+  border: 1px solid #eaeaea;
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: #fff;
+  color: #d93838;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sair:hover {
+  background: #fff5f5;
+  border-color: #ffcccc;
+}
+
+/* ===================================== */
+/* ABAS */
+/* ===================================== */
+.tab-content {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ===================================== */
+/* MAPA */
+/* ===================================== */
+#map {
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - 81px);
+  z-index: 1;
+}
+
+/* ===================================== */
+/* ANALYTICS & HISTORICO */
+/* ===================================== */
+.analytics-container, .history-wrapper {
+  width: 100%;
+  height: 100%;
+  padding: 32px;
+  background: #fafafc;
+  overflow-y: auto;
+}
+
+.analytics-container {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.chart-card canvas {
+  width: 500px !important;
+  height: 350px !important;
+}
+
+.history-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.history-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 8px;
+}
+
+.history-sub {
+  color: #888;
+  font-size: 13px;
+}
+
+/* ===================================== */
+/* RESPONSIVO */
+/* ===================================== */
+@media(max-width:1200px) {
+  .sidebar { width: 340px; min-width: 340px; }
+  .chart-card canvas { width: 420px !important; }
+}
+
+@media(max-width:900px) {
+  .app-container { flex-direction: column; }
+  .sidebar { width: 100%; min-width: 100%; height: auto; border-right: none; border-bottom: 1px solid #eaeaea; }
+  .top-header { flex-direction: column; gap: 16px; align-items: flex-start; }
+  .tabs { flex-wrap: wrap; }
 }
