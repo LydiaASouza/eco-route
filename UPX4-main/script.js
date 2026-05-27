@@ -136,6 +136,11 @@ function atualizarCards(distanciaKm, tempoMin){
   document.getElementById("tempoWalk").innerText = `${Math.floor(distanciaKm / 5)}h ${Math.floor(((distanciaKm / 5) % 1) * 60)}min`;
   document.getElementById("custoWalk").innerText = `R$ 0.00`;
   document.getElementById("co2Walk").innerText = `0.00 kg`;
+
+  // GAMIFICAÇÃO ESG: Regra de 3 (10kg de CO2 = 1 árvore)
+  const emissaoCarro = distanciaKm * 0.21;
+  const arvores = (emissaoCarro / 10).toFixed(1);
+  document.getElementById("arvoresSalvas").innerText = arvores > 0 ? arvores : "--";
 }
 
 // =====================================

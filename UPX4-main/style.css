@@ -420,3 +420,42 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
+
+/* ===================================== */
+/* GAMIFICAÇÃO ESG */
+/* ===================================== */
+.gamification-card {
+  background: #f4fbf6; /* Fundo verde menta */
+  border: 1px solid #a3d9b1;
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.gamification-icon i {
+  font-size: 36px;
+  color: #4CAF50;
+}
+
+.gamification-info h4 {
+  color: #2e7d32;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.gamification-info p {
+  color: #555;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.gamification-info strong {
+  color: #111;
+  font-size: 16px;
+}
