@@ -163,7 +163,15 @@ function atualizarCards(distanciaKm, tempoMin, taChovendo = false){
 
   // CARRO
   document.getElementById("tempoCarro").innerText = `${Math.floor(tempoMin / 60)}h ${tempoMin % 60}min`;
-  document.getElementById("custoCarro").innerText = `R$ ${(distanciaKm * 0.75).toFixed(2)}`;
+  
+  // CÁLCULO DE TCO DO CARRO (Fracionamento Matemático)
+  const custoCombustivelKm = 0.45; // Gasto direto com gasolina/etanol
+  const custoManutencaoKm = 0.12;  // Manutenção invisível (pneus, óleo, freio)
+  const custoDepreciacaoKm = 0.18; // Desvalorização do veículo
+  const tcoTotalKm = custoCombustivelKm + custoManutencaoKm + custoDepreciacaoKm; // Totaliza R$ 0.75/km
+  const custoFinalCarro = distanciaKm * tcoTotalKm;
+  
+  document.getElementById("custoCarro").innerText = `R$ ${custoFinalCarro.toFixed(2)}`;
   document.getElementById("co2Carro").innerText = `${(distanciaKm * 0.21).toFixed(2)} kg`;
 
   // ÔNIBUS
